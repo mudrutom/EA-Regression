@@ -5,13 +5,16 @@ import cz.bia.ea.regression.model.Expression;
 import cz.bia.ea.regression.model.NonTerminal;
 import cz.bia.ea.regression.model.UnaryExpression;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 @NonTerminal
-public abstract class AbstractUnaryExpression implements UnaryExpression {
+public abstract class AbstractUnaryExpression extends AbstractExpression implements UnaryExpression {
 
 	protected Expression child;
 
 	public AbstractUnaryExpression(@NotNull Expression child) {
-		this.child = child;
+		this.child = checkNotNull(child);
+		modified = true;
 	}
 
 	@Override
@@ -21,12 +24,26 @@ public abstract class AbstractUnaryExpression implements UnaryExpression {
 
 	@Override
 	public void setChild(@NotNull Expression child) {
-		this.child = child;
+		this.child = checkNotNull(child);
+		modified = true;
+	}
+
+	@Override
+	public Expression swapChild(@NotNull Expression newChild) {
+		final Expression old = child;
+		child = checkNotNull(newChild);
+		modified = true;
+		return old;
 	}
 
 	@Override
 	public boolean isTerminal() {
 		return false;
+	}
+
+	@Override
+	public int getDepth() {
+		return 1 + child.getDepth();
 	}
 
 }

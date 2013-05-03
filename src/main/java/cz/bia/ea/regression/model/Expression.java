@@ -22,4 +22,6 @@ public interface Expression {
 	 */
 	public String toStringExpression();
 
+	public int getDepth();
+
 }

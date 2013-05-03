@@ -4,6 +4,6 @@ import java.lang.annotation.*;
 
 @Documented
 @Target({ElementType.TYPE})
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface NonTerminal {
 }

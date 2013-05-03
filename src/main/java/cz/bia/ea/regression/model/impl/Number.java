@@ -1,10 +1,9 @@
 package cz.bia.ea.regression.model.impl;
 
-import cz.bia.ea.regression.model.Expression;
 import cz.bia.ea.regression.model.Terminal;
 
 @Terminal
-public class Number implements Expression {
+public class Number extends AbstractExpression {
 
 	private final double number;
 

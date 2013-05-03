@@ -6,4 +6,6 @@ public interface UnaryExpression extends Expression {
 
 	public void setChild(Expression child);
 
+	public Expression swapChild(Expression newChild);
+
 }

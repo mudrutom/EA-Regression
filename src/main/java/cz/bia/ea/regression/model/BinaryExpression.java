@@ -10,4 +10,8 @@ public interface BinaryExpression extends Expression {
 
 	public void setRightChild(Expression rightChild);
 
+	public Expression swapLeftChild(Expression newLeftChild);
+
+	public Expression swapRightChild(Expression newRightChild);
+
 }
