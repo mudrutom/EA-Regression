@@ -5,9 +5,17 @@ import cz.bia.ea.regression.model.Terminal;
 @Terminal
 public class Number extends AbstractExpression {
 
-	private final double number;
+	private double number;
 
 	public Number(double number) {
+		this.number = number;
+	}
+
+	public double getNumber() {
+		return number;
+	}
+
+	public void setNumber(double number) {
 		this.number = number;
 	}
 

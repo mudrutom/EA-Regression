@@ -1,7 +1,9 @@
 package cz.bia.ea.regression.model.factory;
 
+import com.sun.istack.internal.NotNull;
 import cz.bia.ea.regression.model.BinaryExpression;
 import cz.bia.ea.regression.model.Expression;
+import cz.bia.ea.regression.model.ExpressionWrapper;
 import cz.bia.ea.regression.model.UnaryExpression;
 import cz.bia.ea.regression.model.impl.E;
 import cz.bia.ea.regression.model.impl.Number;
@@ -28,44 +30,44 @@ public class ExpressionFactory {
 		this(new RandomNumbers());
 	}
 
-	public ExpressionFactory(RandomNumbers randomNumbers) {
+	public ExpressionFactory(@NotNull RandomNumbers randomNumbers) {
 		this.randomNumbers = checkNotNull(randomNumbers);
 		setTerminalExpressions(new Expression[]{Variable.X, new Number(1.0), E.E, PI.PI});
 		setUnaryExpressions(CompositeExpression.getUnaryTypes());
 		setBinaryExpressions(CompositeExpression.getBinaryTypes());
 	}
 
-	public void setTerminalExpressions(Expression[] terminals) {
+	public void setTerminalExpressions(@NotNull Expression[] terminals) {
 		terminalExpressions = checkNotNull(terminals);
 	}
 
-	public void setUnaryExpressions(CompositeExpression[] types) {
+	public void setUnaryExpressions(@NotNull CompositeExpression[] types) {
 		unaryExpressions = checkNotNull(types);
 	}
 
-	public void setBinaryExpressions(CompositeExpression[] types) {
+	public void setBinaryExpressions(@NotNull CompositeExpression[] types) {
 		binaryExpressions = checkNotNull(types);
 	}
 
-	public List<Expression> generateExpressions(int size, int depth) {
+	public List<ExpressionWrapper> generateExpressions(int size, int depth) {
 		checkArgument(size > 0);
-		final List<Expression> list = new ArrayList<Expression>(size);
+		final List<ExpressionWrapper> list = new ArrayList<ExpressionWrapper>(size);
 		for (int i = 0; i < size; i++) {
 			list.add(generateExpression(depth));
 		}
 		return list;
 	}
 
-	public Expression generateExpression(int depth) {
+	public ExpressionWrapper generateExpression(int depth) {
 		if (depth < 1) {
 			return createTerminalExpression();
 		} else if (randomNumbers.nextBoolean()) {
-			final BinaryExpression binary = createBinaryExpression();
+			final ExpressionWrapper binary = createBinaryExpression();
 			binary.setLeftChild(generateExpression(depth - 1));
 			binary.setRightChild(generateExpression(depth - 1));
 			return binary;
 		} else if (randomNumbers.nextBoolean()) {
-			final UnaryExpression unary = createUnaryExpression();
+			final ExpressionWrapper unary = createUnaryExpression();
 			unary.setChild(generateExpression(depth - 1));
 			return unary;
 		}
@@ -73,16 +75,16 @@ public class ExpressionFactory {
 		return generateExpression(depth - 1);
 	}
 
-	public Expression createTerminalExpression() {
-		return randomNumbers.nextElement(terminalExpressions);
+	public ExpressionWrapper createTerminalExpression() {
+		return new ExpressionWrapper(randomNumbers.nextElement(terminalExpressions));
 	}
 
 	@SuppressWarnings("unchecked")
-	public UnaryExpression createUnaryExpression() {
+	public ExpressionWrapper createUnaryExpression() {
 		final CompositeExpression type = randomNumbers.nextElement(unaryExpressions);
 		try {
 			final Constructor<UnaryExpression> constructor = type.type.getConstructor(Expression.class);
-			return constructor.newInstance(leaf);
+			return new ExpressionWrapper(constructor.newInstance(leaf));
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 			return null;
@@ -90,11 +92,11 @@ public class ExpressionFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public BinaryExpression createBinaryExpression() {
+	public ExpressionWrapper createBinaryExpression() {
 		final CompositeExpression type = randomNumbers.nextElement(binaryExpressions);
 		try {
 			final Constructor<BinaryExpression> constructor = type.type.getConstructor(Expression.class, Expression.class);
-			return constructor.newInstance(leaf, leaf);
+			return new ExpressionWrapper(constructor.newInstance(leaf, leaf));
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 			return null;
