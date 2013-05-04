@@ -22,6 +22,9 @@ public interface Expression {
 	 */
 	public String toStringExpression();
 
+	/**
+	 * @return depth of the expression tree
+	 */
 	public int getDepth();
 
 }

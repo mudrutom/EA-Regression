@@ -50,7 +50,7 @@ public class ExpressionWrapper implements Expression, UnaryExpression, BinaryExp
 
 	@Override
 	public Expression swapLeftChild(Expression newLeftChild) {
-		return ((BinaryExpression) expression).swapRightChild(newLeftChild);
+		return ((BinaryExpression) expression).swapLeftChild(newLeftChild);
 	}
 
 	@Override

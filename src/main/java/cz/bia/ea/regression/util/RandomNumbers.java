@@ -1,5 +1,7 @@
 package cz.bia.ea.regression.util;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -55,6 +57,16 @@ public class RandomNumbers {
 	public <E> E nextElement(List<E> from) {
 		checkNotNull(from);
 		return from.get(nextInt(from.size()));
+	}
+
+	public <E> E nextElement(Collection<E> from) {
+		checkNotNull(from);
+		final int n = nextInt(from.size());
+		final Iterator<E> iterator = from.iterator();
+		for (int i = 0; i < n - 1; i++) {
+			iterator.next();
+		}
+		return iterator.next();
 	}
 
 	public <E> E nextElement(E[] from) {

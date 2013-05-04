@@ -32,21 +32,24 @@ public class ExpressionFactory {
 
 	public ExpressionFactory(@NotNull RandomNumbers randomNumbers) {
 		this.randomNumbers = checkNotNull(randomNumbers);
-		setTerminalExpressions(new Expression[]{Variable.X, new Number(1.0), E.E, PI.PI});
+		setTerminalExpressions(Variable.X, new Number(1.0), E.E, PI.PI);
 		setUnaryExpressions(CompositeExpression.getUnaryTypes());
 		setBinaryExpressions(CompositeExpression.getBinaryTypes());
 	}
 
-	public void setTerminalExpressions(@NotNull Expression[] terminals) {
+	public void setTerminalExpressions(@NotNull Expression... terminals) {
 		terminalExpressions = checkNotNull(terminals);
+		checkArgument(terminals.length > 0);
 	}
 
-	public void setUnaryExpressions(@NotNull CompositeExpression[] types) {
+	public void setUnaryExpressions(@NotNull CompositeExpression... types) {
 		unaryExpressions = checkNotNull(types);
+		checkArgument(types.length > 0);
 	}
 
-	public void setBinaryExpressions(@NotNull CompositeExpression[] types) {
+	public void setBinaryExpressions(@NotNull CompositeExpression... types) {
 		binaryExpressions = checkNotNull(types);
+		checkArgument(types.length > 0);
 	}
 
 	public List<ExpressionWrapper> generateExpressions(int size, int depth) {

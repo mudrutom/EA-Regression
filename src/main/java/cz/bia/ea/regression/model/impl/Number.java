@@ -30,6 +30,11 @@ public class Number extends AbstractExpression {
 	}
 
 	@Override
+	public int getDepth() {
+		return 0;
+	}
+
+	@Override
 	public String toStringExpression() {
 		return String.format("%g", number);
 	}

@@ -16,8 +16,6 @@ public abstract class AbstractBinaryExpression extends AbstractExpression implem
 	public AbstractBinaryExpression(@NotNull Expression leftChild, @NotNull Expression rightChild) {
 		this.leftChild = checkNotNull(leftChild);
 		this.rightChild = checkNotNull(rightChild);
-		depth = computeDepth();
-		modified = false;
 	}
 
 	@Override
@@ -33,20 +31,17 @@ public abstract class AbstractBinaryExpression extends AbstractExpression implem
 	@Override
 	public void setLeftChild(@NotNull Expression leftChild) {
 		this.leftChild = checkNotNull(leftChild);
-		depth = computeDepth();
 	}
 
 	@Override
 	public void setRightChild(@NotNull Expression rightChild) {
 		this.rightChild = checkNotNull(rightChild);
-		depth = computeDepth();
 	}
 
 	@Override
 	public Expression swapLeftChild(@NotNull Expression newLeftChild) {
 		final Expression old = leftChild;
 		leftChild = checkNotNull(newLeftChild);
-		depth = computeDepth();
 		return old;
 	}
 
@@ -54,7 +49,6 @@ public abstract class AbstractBinaryExpression extends AbstractExpression implem
 	public Expression swapRightChild(@NotNull Expression newRightChild) {
 		final Expression old = rightChild;
 		rightChild = checkNotNull(newRightChild);
-		depth = computeDepth();
 		return old;
 	}
 
@@ -63,7 +57,8 @@ public abstract class AbstractBinaryExpression extends AbstractExpression implem
 		return false;
 	}
 
-	private int computeDepth() {
+	@Override
+	public int getDepth() {
 		return 1 + Math.max(leftChild.getDepth(), rightChild.getDepth());
 	}
 

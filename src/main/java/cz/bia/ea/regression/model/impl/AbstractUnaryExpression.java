@@ -14,8 +14,6 @@ public abstract class AbstractUnaryExpression extends AbstractExpression impleme
 
 	public AbstractUnaryExpression(@NotNull Expression child) {
 		this.child = checkNotNull(child);
-		depth = computeDepth();
-		modified = false;
 	}
 
 	@Override
@@ -26,14 +24,12 @@ public abstract class AbstractUnaryExpression extends AbstractExpression impleme
 	@Override
 	public void setChild(@NotNull Expression child) {
 		this.child = checkNotNull(child);
-		depth = computeDepth();
 	}
 
 	@Override
 	public Expression swapChild(@NotNull Expression newChild) {
 		final Expression old = child;
 		child = checkNotNull(newChild);
-		depth = computeDepth();
 		return old;
 	}
 
@@ -42,7 +38,8 @@ public abstract class AbstractUnaryExpression extends AbstractExpression impleme
 		return false;
 	}
 
-	private int computeDepth() {
+	@Override
+	public int getDepth() {
 		return 1 + child.getDepth();
 	}
 
