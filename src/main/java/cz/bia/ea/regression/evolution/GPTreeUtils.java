@@ -17,44 +17,113 @@ public class GPTreeUtils {
 
 	public static void pointMutation(@NotNull GPTree tree, @NotNull ExpressionFactory factory, @NotNull RandomNumbers rnd) {
 		checkNotNull(tree); checkNotNull(factory); checkNotNull(rnd);
-		// TODO
+
+		// select set of terminals or non-terminals
+		final boolean takeTerm = tree.getNonTerminals().isEmpty() || rnd.nextInt(10) == 0; // 10% chance
+		final Set<ExpressionWrapper> set = takeTerm ? tree.getTerminals() : tree.getNonTerminals();
+
+		// select random element
+		final ExpressionWrapper node = rnd.nextElement(set);
+		if (node.equals(tree.getRoot())) {
+			// TODO try something else
+			pointMutation(tree, factory, rnd);
+			return;
+		}
+
+		// create new expression
+		final ExpressionWrapper newNode;
+		if (node.isUnary()) {
+			newNode = factory.createUnaryExpression();
+			newNode.setChild(node.getChild());
+		} else if (node.isBinary()) {
+			newNode = factory.createBinaryExpression();
+			newNode.setLeftChild(node.getLeftChild());
+			newNode.setRightChild(node.getRightChild());
+		} else {
+			newNode = factory.createTerminalExpression();
+		}
+
+		// swap the expression
+		node.setExpression(newNode.getExpression());
 	}
 
 	public static void subtreeMutation(@NotNull GPTree tree, @NotNull ExpressionFactory factory, @NotNull RandomNumbers rnd) {
 		checkNotNull(tree); checkNotNull(factory); checkNotNull(rnd);
-		// TODO
+
+		// select set of terminals or non-terminals
+		final boolean takeTerm = tree.getNonTerminals().isEmpty() || rnd.nextInt(10) == 0; // 10% chance
+		final Set<ExpressionWrapper> set = takeTerm ? tree.getTerminals() : tree.getNonTerminals();
+
+		// select random element
+		final ExpressionWrapper node = rnd.nextElement(set);
+		if (node.equals(tree.getRoot())) {
+			// TODO try something else
+			subtreeMutation(tree, factory, rnd);
+			return;
+		}
+
+		// create new expression
+		final ExpressionWrapper newNode = factory.generateExpression(2);
+
+		final TraverseResult resultOld = traverse(node);
+		final TraverseResult resultNew = traverse(newNode);
+
+		// remove old subtrees
+		tree.getTerminals().removeAll(resultOld.terminals);
+		tree.getNonTerminals().removeAll(resultOld.nonTerminals);
+
+		// add new subtrees
+		tree.getTerminals().addAll(resultNew.terminals);
+		tree.getNonTerminals().addAll(resultNew.nonTerminals);
+
+		// swap the expression
+		node.setExpression(newNode.getExpression());
+
+		// re-compute depth
+		tree.setDepth(tree.getRoot().getDepth());
 	}
 
 	public static void subtreeCrossover(@NotNull GPTree treeOne, @NotNull GPTree treeTwo, @NotNull RandomNumbers rnd) {
 		checkNotNull(treeOne); checkNotNull(treeTwo); checkNotNull(rnd);
 
-		final boolean takeTerm1 = rnd.nextInt(10) == 0; // 10% chance
+		// select set of terminals or non-terminals
+		final boolean takeTerm1 = treeOne.getNonTerminals().isEmpty() || rnd.nextInt(10) == 0; // 10% chance
 		final Set<ExpressionWrapper> oneSet = takeTerm1 ? treeOne.getTerminals() : treeOne.getNonTerminals();
+		final boolean takeTerm2 = treeTwo.getNonTerminals().isEmpty() || rnd.nextInt(10) == 0; // 10% chance
+		final Set<ExpressionWrapper> twoSet = takeTerm2 ? treeTwo.getTerminals() : treeTwo.getNonTerminals();
 
-		final boolean takeTerm2 = rnd.nextInt(10) == 0; // 10% chance
-		final Set<ExpressionWrapper> twoSet = takeTerm2 ? treeOne.getTerminals() : treeOne.getNonTerminals();
-
+		// select random elements
 		final ExpressionWrapper one = rnd.nextElement(oneSet);
 		final ExpressionWrapper two = rnd.nextElement(twoSet);
-		final Expression tmp = one.getExpression();
-		one.setExpression(two.getExpression());
-		two.setExpression(tmp);
+		if (one.equals(treeOne.getRoot()) || two.equals(treeTwo.getRoot())) {
+			// TODO try something else
+			subtreeCrossover(treeOne, treeTwo, rnd);
+			return;
+		}
 
 		final TraverseResult resultOne = traverse(one);
+		final TraverseResult resultTwo = traverse(two);
+
+		// remove old subtrees
 		treeOne.getTerminals().removeAll(resultOne.terminals);
 		treeOne.getNonTerminals().removeAll(resultOne.nonTerminals);
-
-		final TraverseResult resultTwo = traverse(two);
 		treeTwo.getTerminals().removeAll(resultTwo.terminals);
 		treeTwo.getNonTerminals().removeAll(resultTwo.nonTerminals);
 
+		// add new subtrees
 		treeOne.getTerminals().addAll(resultTwo.terminals);
 		treeOne.getNonTerminals().addAll(resultTwo.nonTerminals);
 		treeTwo.getTerminals().addAll(resultOne.terminals);
 		treeTwo.getNonTerminals().addAll(resultOne.nonTerminals);
 
-		treeOne.setDepth(one.getDepth());
-		treeTwo.setDepth(two.getDepth());
+		// swap the expressions
+		final Expression tmp = one.getExpression();
+		one.setExpression(two.getExpression());
+		two.setExpression(tmp);
+
+		// re-compute depths
+		treeOne.setDepth(treeOne.getRoot().getDepth());
+		treeTwo.setDepth(treeTwo.getRoot().getDepth());
 	}
 
 	public static TraverseResult traverse(@NotNull ExpressionWrapper expression) {

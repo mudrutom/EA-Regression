@@ -3,6 +3,7 @@ package cz.bia.ea.regression.evolution;
 import com.sun.istack.internal.NotNull;
 import cz.bia.ea.regression.evolution.measure.Objective;
 import cz.bia.ea.regression.generate.Tuple;
+import cz.bia.ea.regression.model.Expression;
 import cz.bia.ea.regression.model.ExpressionWrapper;
 
 import java.util.Iterator;
@@ -36,6 +37,10 @@ public class GPTree {
 		terminals = result.terminals;
 		nonTerminals = result.nonTerminals;
 		fitness = Double.NaN;
+	}
+
+	public Expression getExpression() {
+		return root.getExpression();
 	}
 
 	protected ExpressionWrapper getRoot() {

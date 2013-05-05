@@ -19,4 +19,9 @@ public class Logarithm extends AbstractUnaryExpression {
 		return String.format("log(%s)", child.toStringExpression());
 	}
 
+	@Override
+	public String toString() {
+		return "log()";
+	}
+
 }

@@ -25,4 +25,9 @@ public class Exponential extends Power implements UnaryExpression {
 		return swapRightChild(newChild);
 	}
 
+	@Override
+	public String toString() {
+		return "exp()";
+	}
+
 }

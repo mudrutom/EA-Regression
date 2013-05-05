@@ -93,4 +93,9 @@ public class ExpressionWrapper implements Expression, UnaryExpression, BinaryExp
 		return expression.getDepth();
 	}
 
+	@Override
+	public String toString() {
+		return expression.toString();
+	}
+
 }

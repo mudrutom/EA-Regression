@@ -19,4 +19,9 @@ public class Cosine extends AbstractUnaryExpression {
 		return String.format("cos(%s)", child.toStringExpression());
 	}
 
+	@Override
+	public String toString() {
+		return "cos()";
+	}
+
 }

@@ -19,4 +19,9 @@ public class Power extends AbstractBinaryExpression {
 		return String.format("(%s ^ %s)", leftChild.toStringExpression(), rightChild.toStringExpression());
 	}
 
+	@Override
+	public String toString() {
+		return "L^R";
+	}
+
 }

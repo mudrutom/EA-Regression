@@ -19,4 +19,9 @@ public class Sine extends AbstractUnaryExpression {
 		return String.format("sin(%s)", child.toStringExpression());
 	}
 
+	@Override
+	public String toString() {
+		return "sin()";
+	}
+
 }
