@@ -50,6 +50,10 @@ public class GPTree {
 		return nonTerminals;
 	}
 
+	protected void setDepth(int depth) {
+		this.depth = depth;
+	}
+
 	public int getDepth() {
 		return depth;
 	}
