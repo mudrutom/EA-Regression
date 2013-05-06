@@ -29,6 +29,11 @@ public class ExpressionWrapper implements Expression, UnaryExpression, BinaryExp
 	}
 
 	@Override
+	public Expression duplicate() {
+		return new ExpressionWrapper(expression.duplicate());
+	}
+
+	@Override
 	public Expression getLeftChild() {
 		return ((BinaryExpression) expression).getLeftChild();
 	}

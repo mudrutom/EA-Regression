@@ -1,11 +1,17 @@
 package cz.bia.ea.regression.model.impl;
 
+import cz.bia.ea.regression.model.Expression;
 import cz.bia.ea.regression.model.Terminal;
 
 @Terminal
 public class Variable extends AbstractExpression {
 
 	public static final Variable X = new Variable();
+
+	@Override
+	public Expression duplicate() {
+		return X;
+	}
 
 	@Override
 	public double eval(double x) {

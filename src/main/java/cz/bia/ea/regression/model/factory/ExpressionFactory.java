@@ -32,7 +32,7 @@ public class ExpressionFactory {
 
 	public ExpressionFactory(@NotNull RandomNumbers randomNumbers) {
 		this.randomNumbers = checkNotNull(randomNumbers);
-		setTerminalExpressions(Variable.X, new Number(1.0), E.E, PI.PI);
+		setTerminalExpressions(Variable.X, new Number(0.0), new Number(1.0), E.E, PI.PI);
 		setUnaryExpressions(CompositeExpression.getUnaryTypes());
 		setBinaryExpressions(CompositeExpression.getBinaryTypes());
 	}
@@ -86,7 +86,7 @@ public class ExpressionFactory {
 	public ExpressionWrapper createUnaryExpression() {
 		final CompositeExpression type = randomNumbers.nextElement(unaryExpressions);
 		try {
-			final Constructor<UnaryExpression> constructor = type.type.getConstructor(Expression.class);
+			final Constructor<? extends UnaryExpression> constructor = type.type.getConstructor(Expression.class);
 			return new ExpressionWrapper(constructor.newInstance(leaf));
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
@@ -98,7 +98,7 @@ public class ExpressionFactory {
 	public ExpressionWrapper createBinaryExpression() {
 		final CompositeExpression type = randomNumbers.nextElement(binaryExpressions);
 		try {
-			final Constructor<BinaryExpression> constructor = type.type.getConstructor(Expression.class, Expression.class);
+			final Constructor<? extends BinaryExpression> constructor = type.type.getConstructor(Expression.class, Expression.class);
 			return new ExpressionWrapper(constructor.newInstance(leaf, leaf));
 		} catch (Exception e) {
 			e.printStackTrace(System.err);

@@ -1,5 +1,6 @@
 package cz.bia.ea.regression.model.impl;
 
+import cz.bia.ea.regression.model.Expression;
 import cz.bia.ea.regression.model.Terminal;
 
 @Terminal
@@ -17,6 +18,11 @@ public class Number extends AbstractExpression {
 
 	public void setNumber(double number) {
 		this.number = number;
+	}
+
+	@Override
+	public Expression duplicate() {
+		return new Number(number);
 	}
 
 	@Override

@@ -27,4 +27,9 @@ public interface Expression {
 	 */
 	public int getDepth();
 
+	/**
+	 * @return exact duplicate of the expression
+	 */
+	public Expression duplicate();
+
 }
