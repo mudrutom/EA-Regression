@@ -5,6 +5,7 @@ import cz.bia.ea.regression.evolution.measure.Objective;
 import cz.bia.ea.regression.generate.Tuple;
 import cz.bia.ea.regression.model.Expression;
 import cz.bia.ea.regression.model.ExpressionWrapper;
+import cz.bia.ea.regression.model.impl.Number;
 
 import java.util.Iterator;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-public class GPTree implements Individual {
+public class GAPolynomial implements Individual {
 
 	private static Objective OBJECTIVE = null;
 
@@ -23,19 +24,16 @@ public class GPTree implements Individual {
 
 	private final ExpressionWrapper root;
 
-	private final Set<ExpressionWrapper> terminals;
-	private final Set<ExpressionWrapper> nonTerminals;
+	private final Set<Number> parameters;
 
-	private int depth;
+	private int order;
 	private double fitness;
 
-	public GPTree(@NotNull ExpressionWrapper root) {
+	public GAPolynomial(@NotNull ExpressionWrapper root) {
 		checkState(OBJECTIVE != null, "OBJECTIVE must be set");
 		this.root = checkNotNull(root);
-		final GPTreeUtils.TraverseResult result = GPTreeUtils.traverse(root);
-		depth = result.depth;
-		terminals = result.terminals;
-		nonTerminals = result.nonTerminals;
+		parameters = GAPolynomialUtils.traverse(root);
+		order = parameters.size() - 1;
 		fitness = Double.NaN;
 	}
 
@@ -43,20 +41,16 @@ public class GPTree implements Individual {
 		return root;
 	}
 
-	protected Set<ExpressionWrapper> getTerminals() {
-		return terminals;
+	protected Set<Number> getParameters() {
+		return parameters;
 	}
 
-	protected Set<ExpressionWrapper> getNonTerminals() {
-		return nonTerminals;
+	protected void setOrder(int order) {
+		this.order = order;
 	}
 
-	protected void setDepth(int depth) {
-		this.depth = depth;
-	}
-
-	public int getDepth() {
-		return depth;
+	public int getOrder() {
+		return order;
 	}
 
 	@Override

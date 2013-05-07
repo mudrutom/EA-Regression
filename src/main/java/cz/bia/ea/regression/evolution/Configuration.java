@@ -3,15 +3,12 @@ package cz.bia.ea.regression.evolution;
 import cz.bia.ea.regression.evolution.measure.ObjectiveFunction;
 
 /**
- * Configuration for the evolution.
+ * Basic configuration for the evolution.
  */
 public class Configuration {
 
 	/** An objective function. */
 	public ObjectiveFunction objective;
-
-	/** Maximal depth of initially generated trees. */
-	public int initTreeDepth;
 
 	/** Maximal size of the population. */
 	public int populationSize;
@@ -20,10 +17,6 @@ public class Configuration {
 	/** Size of tournament selection. */
 	public int tournamentSize;
 
-	/** Type of crossover operator. */
-	public GPTreeUtils.TreeCrossoverType crossoverType;
-	/** Type of mutation operator. */
-	public GPTreeUtils.TreeMutationType mutationType;
 	/** Probability of mutation. */
 	public double mutationProbability;
 
@@ -36,10 +29,9 @@ public class Configuration {
 	 * @return <tt>true</tt> IFF the configuration is valid
 	 */
 	public boolean validate() {
-		return  objective != null && initTreeDepth >= 0 &&
+		return  objective != null &&
 				populationSize > 0 && selectionSize > 0 && tournamentSize > 0 &&
 				populationSize >= 2 * selectionSize && selectionSize % 2 == 0 && populationSize >= tournamentSize &&
-				crossoverType != null && mutationType != null &&
 				mutationProbability >= 0.0 && mutationProbability <= 1.0 &&
 				maxEpochs > 0 && !Double.isNaN(fitnessThreshold);
 	}
@@ -52,14 +44,10 @@ public class Configuration {
 
 		config.objective = ObjectiveFunction.MSE;
 
-		config.initTreeDepth = 5;
-
 		config.populationSize = 500;
 		config.selectionSize = 200;
 		config.tournamentSize = 5;
 
-		config.crossoverType = GPTreeUtils.TreeCrossoverType.SUBTREE_CROSSOVER;
-		config.mutationType = GPTreeUtils.TreeMutationType.POINT_MUTATION;
 		config.mutationProbability = 0.2;
 
 		config.maxEpochs = 100;

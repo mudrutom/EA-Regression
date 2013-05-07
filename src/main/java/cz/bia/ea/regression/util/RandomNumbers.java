@@ -52,6 +52,11 @@ public class RandomNumbers {
 		return random.nextDouble();
 	}
 
+	public double nextDouble(double from, double to) {
+		checkArgument(to - from > 0.0, "invalid bounds");
+		return from + random.nextDouble() * (to - from);
+	}
+
 	public double nextGaussian() {
 		return random.nextGaussian();
 	}

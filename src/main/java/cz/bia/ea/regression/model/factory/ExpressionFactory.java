@@ -5,10 +5,8 @@ import cz.bia.ea.regression.model.BinaryExpression;
 import cz.bia.ea.regression.model.Expression;
 import cz.bia.ea.regression.model.ExpressionWrapper;
 import cz.bia.ea.regression.model.UnaryExpression;
-import cz.bia.ea.regression.model.impl.E;
+import cz.bia.ea.regression.model.impl.*;
 import cz.bia.ea.regression.model.impl.Number;
-import cz.bia.ea.regression.model.impl.PI;
-import cz.bia.ea.regression.model.impl.Variable;
 import cz.bia.ea.regression.util.RandomNumbers;
 
 import java.lang.reflect.Constructor;
@@ -50,6 +48,38 @@ public class ExpressionFactory {
 	public void setBinaryExpressions(@NotNull CompositeExpression... types) {
 		binaryExpressions = checkNotNull(types);
 		checkArgument(types.length >= 0);
+	}
+
+	public List<ExpressionWrapper> generatePolyExpressions(int size, int order, double rangeFrom, double rangeTo) {
+		checkArgument(size > 0);
+		final List<ExpressionWrapper> list = new ArrayList<ExpressionWrapper>(size);
+		for (int i = 0; i < size; i++) {
+			list.add(generatePolyExpression(order, rangeFrom, rangeTo));
+		}
+		return list;
+	}
+
+	public ExpressionWrapper generatePolyExpression(int order, double rangeFrom, double rangeTo) {
+		if (order < 1) {
+			return new ExpressionWrapper(new Number(randomNumbers.nextDouble(rangeFrom, rangeTo)));
+		} else {
+			final ExpressionWrapper root = new ExpressionWrapper(new Plus(leaf, leaf));
+			root.setRightChild(generatePolyExpression(order - 1, rangeFrom, rangeTo));
+
+			ExpressionWrapper node = new ExpressionWrapper(new Multiply(leaf, leaf));
+			node.setLeftChild(new ExpressionWrapper(new Number(randomNumbers.nextDouble(rangeFrom, rangeTo))));
+			root.setLeftChild(node);
+
+			for (int i = 0; i < order - 1; i++) {
+				ExpressionWrapper next = new ExpressionWrapper(new Multiply(leaf, leaf));
+				next.setLeftChild(new ExpressionWrapper(Variable.X));
+				node.setRightChild(next);
+				node = next;
+			}
+			node.setRightChild(new ExpressionWrapper(Variable.X));
+
+			return root;
+		}
 	}
 
 	public List<ExpressionWrapper> generateExpressions(int size, int depth) {
