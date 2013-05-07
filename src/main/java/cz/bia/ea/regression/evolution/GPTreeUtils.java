@@ -19,7 +19,7 @@ public class GPTreeUtils {
 		checkNotNull(tree); checkNotNull(factory); checkNotNull(rnd);
 
 		// select set of terminals or non-terminals
-		final boolean takeTerm = tree.getNonTerminals().isEmpty() || rnd.nextInt(10) == 0; // 10% chance
+		final boolean takeTerm = tree.getNonTerminals().isEmpty() || rnd.nextBoolean(); // 50% chance
 		final Set<ExpressionWrapper> set = takeTerm ? tree.getTerminals() : tree.getNonTerminals();
 
 		// select random element
@@ -51,7 +51,7 @@ public class GPTreeUtils {
 		checkNotNull(tree); checkNotNull(factory); checkNotNull(rnd);
 
 		// select set of terminals or non-terminals
-		final boolean takeTerm = tree.getNonTerminals().isEmpty() || rnd.nextInt(10) == 0; // 10% chance
+		final boolean takeTerm = tree.getNonTerminals().isEmpty() || rnd.nextBoolean(); // 50% chance
 		final Set<ExpressionWrapper> set = takeTerm ? tree.getTerminals() : tree.getNonTerminals();
 
 		// select random element

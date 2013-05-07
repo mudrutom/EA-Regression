@@ -29,7 +29,7 @@ public class ExpressionWrapper implements Expression, UnaryExpression, BinaryExp
 	}
 
 	@Override
-	public Expression duplicate() {
+	public ExpressionWrapper duplicate() {
 		return new ExpressionWrapper(expression.duplicate());
 	}
 

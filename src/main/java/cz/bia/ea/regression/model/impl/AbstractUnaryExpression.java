@@ -28,7 +28,7 @@ public abstract class AbstractUnaryExpression extends AbstractExpression impleme
 	}
 
 	@Override
-	public Expression duplicate() {
+	public UnaryExpression duplicate() {
 		try {
 			return constructor.newInstance(child.duplicate());
 		} catch (Exception e) {

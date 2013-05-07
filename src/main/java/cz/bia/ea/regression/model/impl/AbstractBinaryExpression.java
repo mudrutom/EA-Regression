@@ -30,7 +30,7 @@ public abstract class AbstractBinaryExpression extends AbstractExpression implem
 	}
 
 	@Override
-	public Expression duplicate() {
+	public BinaryExpression duplicate() {
 		try {
 			return constructor.newInstance(leftChild.duplicate(), rightChild.duplicate());
 		} catch (Exception e) {

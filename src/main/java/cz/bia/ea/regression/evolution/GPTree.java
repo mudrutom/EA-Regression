@@ -13,7 +13,7 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-public class GPTree {
+public class GPTree implements Comparable<GPTree> {
 
 	private static Objective OBJECTIVE = null;
 
@@ -77,7 +77,19 @@ public class GPTree {
 			errors[i] = OBJECTIVE.getError(tuple.y, y);
 		}
 		fitness = OBJECTIVE.getOverallError(errors);
+		fitness = Double.isNaN(fitness) ? Double.POSITIVE_INFINITY : fitness;
 		return fitness;
+	}
+
+	@Override
+	public int compareTo(GPTree other) {
+		if (getFitness() < other.getFitness()) {
+			return -1;
+		} else if (getFitness() > other.getFitness()) {
+			return +1;
+		} else {
+			return getDepth() - other.getDepth();
+		}
 	}
 
 }
