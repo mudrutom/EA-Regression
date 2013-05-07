@@ -15,6 +15,17 @@ public class GPTreeUtils {
 
 	private GPTreeUtils() { }
 
+	public static void mutation(@NotNull TreeMutationType type, GPTree tree, ExpressionFactory factory, RandomNumbers rnd) {
+		switch (checkNotNull(type)) {
+			case POINT_MUTATION:
+				pointMutation(tree, factory, rnd);
+				break;
+			case SUBTREE_MUTATION:
+				subtreeMutation(tree, factory, rnd);
+				break;
+		}
+	}
+
 	public static void pointMutation(@NotNull GPTree tree, @NotNull ExpressionFactory factory, @NotNull RandomNumbers rnd) {
 		checkNotNull(tree); checkNotNull(factory); checkNotNull(rnd);
 
@@ -81,6 +92,14 @@ public class GPTreeUtils {
 
 		// re-compute depth
 		tree.setDepth(tree.getRoot().getDepth());
+	}
+
+	public static void crossover(@NotNull TreeCrossoverType type, GPTree treeOne,  GPTree treeTwo, RandomNumbers rnd) {
+		switch (checkNotNull(type)) {
+			case SUBTREE_CROSSOVER:
+				subtreeCrossover(treeOne, treeTwo, rnd);
+				break;
+		}
 	}
 
 	public static void subtreeCrossover(@NotNull GPTree treeOne, @NotNull GPTree treeTwo, @NotNull RandomNumbers rnd) {
@@ -160,6 +179,14 @@ public class GPTreeUtils {
 			this.terminals = terminals;
 			this.nonTerminals = nonTerminals;
 		}
+	}
+
+	public static enum TreeMutationType {
+		POINT_MUTATION, SUBTREE_MUTATION
+	}
+
+	public static enum TreeCrossoverType {
+		SUBTREE_CROSSOVER
 	}
 
 }

@@ -1,5 +1,7 @@
 package cz.bia.ea.regression.util;
 
+import com.sun.istack.internal.NotNull;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -54,12 +56,11 @@ public class RandomNumbers {
 		return random.nextGaussian();
 	}
 
-	public <E> E nextElement(List<E> from) {
-		checkNotNull(from);
-		return from.get(nextInt(from.size()));
+	public <E> E nextElement(@NotNull List<E> from) {
+		return checkNotNull(from).get(nextInt(from.size()));
 	}
 
-	public <E> E nextElement(Collection<E> from) {
+	public <E> E nextElement(@NotNull Collection<E> from) {
 		checkNotNull(from);
 		final int n = nextInt(from.size());
 		final Iterator<E> iterator = from.iterator();
@@ -69,13 +70,13 @@ public class RandomNumbers {
 		return iterator.next();
 	}
 
-	public <E> E nextElement(E[] from) {
+	public <E> E nextElement(@NotNull E[] from) {
 		checkNotNull(from);
 		return from[nextInt(from.length)];
 	}
 
-	public <E extends Enum<E>> E nextEnum(Class<E> enumClass) {
-		final E[] values = enumClass.getEnumConstants();
+	public <E extends Enum<E>> E nextEnum(@NotNull Class<E> enumClass) {
+		final E[] values = checkNotNull(enumClass).getEnumConstants();
 		return nextElement(values);
 	}
 

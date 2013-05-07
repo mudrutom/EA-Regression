@@ -1,8 +1,8 @@
 package cz.bia.ea.regression.runtime;
 
+import cz.bia.ea.regression.evolution.Configuration;
 import cz.bia.ea.regression.evolution.Evolution;
-import cz.bia.ea.regression.evolution.GPTree;
-import cz.bia.ea.regression.evolution.measure.MeanSquareError;
+import cz.bia.ea.regression.evolution.measure.ObjectiveFunction;
 import cz.bia.ea.regression.generate.DataGenerator;
 import cz.bia.ea.regression.generate.Function;
 import cz.bia.ea.regression.generate.Tuple;
@@ -22,7 +22,7 @@ public class Runtime {
 		final Function f = new Function() {
 			@Override
 			public double eval(double x) {
-				return Math.cos(2 * x);
+				return Math.cos(x) * Math.cos(x);
 			}
 		};
 		final List<Tuple> data = DataGenerator.generateDataTuples(f, -10.0, 10.0, 1000);
@@ -33,11 +33,15 @@ public class Runtime {
 		factory.setBinaryExpressions(PLUS, MINUS, MULTIPLY, DIVIDE);
 		factory.setUnaryExpressions(SINE);
 
-		GPTree.setObjective(new MeanSquareError());
+		final Configuration config = Configuration.createDefaultConfig();
+		config.objective = ObjectiveFunction.MSE;
+		config.fitnessThreshold = 0.001;
+		config.initTreeDepth = 3;
 
-		final Evolution evolution = new Evolution(factory, randomNumbers);
-		final Expression expression = evolution.evolve(data);
+		final Evolution evolution = new Evolution(randomNumbers);
+		evolution.setExpressionFactory(factory);
 
+		final Expression expression = evolution.evolveFor(data, config);
 		System.out.println(expression.toStringExpression());
 	}
 

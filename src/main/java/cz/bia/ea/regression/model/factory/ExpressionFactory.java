@@ -44,12 +44,12 @@ public class ExpressionFactory {
 
 	public void setUnaryExpressions(@NotNull CompositeExpression... types) {
 		unaryExpressions = checkNotNull(types);
-		checkArgument(types.length > 0);
+		checkArgument(types.length >= 0);
 	}
 
 	public void setBinaryExpressions(@NotNull CompositeExpression... types) {
 		binaryExpressions = checkNotNull(types);
-		checkArgument(types.length > 0);
+		checkArgument(types.length >= 0);
 	}
 
 	public List<ExpressionWrapper> generateExpressions(int size, int depth) {
@@ -64,12 +64,12 @@ public class ExpressionFactory {
 	public ExpressionWrapper generateExpression(int depth) {
 		if (depth < 1) {
 			return createTerminalExpression();
-		} else if (randomNumbers.nextBoolean()) {
+		} else if (binaryExpressions.length > 0 && randomNumbers.nextBoolean()) {
 			final ExpressionWrapper binary = createBinaryExpression();
 			binary.setLeftChild(generateExpression(depth - 1));
 			binary.setRightChild(generateExpression(depth - 1));
 			return binary;
-		} else if (randomNumbers.nextBoolean()) {
+		} else if (unaryExpressions.length > 0 && randomNumbers.nextBoolean()) {
 			final ExpressionWrapper unary = createUnaryExpression();
 			unary.setChild(generateExpression(depth - 1));
 			return unary;
