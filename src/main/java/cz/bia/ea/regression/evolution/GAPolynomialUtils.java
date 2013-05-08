@@ -5,6 +5,7 @@ import cz.bia.ea.regression.model.ExpressionWrapper;
 import cz.bia.ea.regression.model.impl.Number;
 import cz.bia.ea.regression.util.RandomNumbers;
 
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -17,24 +18,78 @@ public class GAPolynomialUtils {
 
 	public static void mutation(@NotNull PolyMutationType type, GAPolynomial poly, double rangeForm, double rangeTo, RandomNumbers rnd) {
 		switch (checkNotNull(type)) {
-		// TODO
+			case POINT_MUTATION:
+				pointMutation(poly, rangeForm, rangeTo, rnd);
+				break;
 		}
 	}
 
-	public static void mutationA(@NotNull GAPolynomial poly, double rangeForm, double rangeTo, @NotNull RandomNumbers rnd) {
+	public static void pointMutation(@NotNull GAPolynomial poly, double rangeForm, double rangeTo, @NotNull RandomNumbers rnd) {
 		checkNotNull(poly); checkArgument(rangeForm < rangeTo); checkNotNull(rnd);
-		// TODO
+
+		// select one parameter to change
+		final Number toChange = rnd.nextElement(poly.getParameters());
+		// assign a random number
+		toChange.setNumber(rnd.nextDouble(rangeForm, rangeTo));
 	}
 
 	public static void crossover(@NotNull PolyCrossoverType type, GAPolynomial polyOne, GAPolynomial polyTwo, RandomNumbers rnd) {
 		switch (checkNotNull(type)) {
-		// TODO
+			case SIMPLE_CROSSOVER:
+				simpleCrossover(polyOne, polyTwo, rnd);
+				break;
+			case ARITHMETICAL_CROSSOVER:
+				arithmeticalCrossover(polyOne, polyTwo, rnd);
+				break;
 		}
 	}
 
-	public static void crossoverA(@NotNull GAPolynomial polyOne, @NotNull GAPolynomial polyTwo, @NotNull RandomNumbers rnd) {
+	public static void simpleCrossover(@NotNull GAPolynomial polyOne, @NotNull GAPolynomial polyTwo, @NotNull RandomNumbers rnd) {
 		checkNotNull(polyOne); checkNotNull(polyTwo); checkNotNull(rnd);
-		// TODO
+		checkArgument(polyOne.getOrder() == polyTwo.getOrder());
+
+		final Iterator<Number> paramOne = polyOne.getParameters().iterator();
+		final Iterator<Number> paramTwo = polyTwo.getParameters().iterator();
+		final int n = polyOne.getParameters().size();
+		if (n < 2) {
+			// order 0 is not supported
+			return;
+		}
+
+		// selection of crossover point
+		final int point = rnd.nextInt(n);
+		// swap parameters
+		for (int i = 0; i <= point; i++) {
+			Number one = paramOne.next();
+			Number two = paramTwo.next();
+			double tmp = one.getNumber();
+			one.setNumber(two.getNumber());
+			two.setNumber(tmp);
+		}
+	}
+
+	public static void arithmeticalCrossover(@NotNull GAPolynomial polyOne, @NotNull GAPolynomial polyTwo, @NotNull RandomNumbers rnd) {
+		checkNotNull(polyOne); checkNotNull(polyTwo); checkNotNull(rnd);
+		checkArgument(polyOne.getOrder() == polyTwo.getOrder());
+
+		final Iterator<Number> paramOne = polyOne.getParameters().iterator();
+		final Iterator<Number> paramTwo = polyTwo.getParameters().iterator();
+		final int n = polyOne.getParameters().size();
+		if (n < 2) {
+			// order 0 is not supported
+			return;
+		}
+
+		// arithmetic recombination (affine combination)
+		final double lambda = rnd.nextDouble();
+		while (paramOne.hasNext()) {
+			Number one = paramOne.next();
+			Number two = paramTwo.next();
+			double n1 = one.getNumber();
+			double n2 = two.getNumber();
+			one.setNumber(lambda * n1 + (1 - lambda) * n2);
+			two.setNumber((1 - lambda) * n1 + lambda * n2);
+		}
 	}
 
 	public static Set<Number> traverse(@NotNull ExpressionWrapper expression) {
@@ -58,11 +113,11 @@ public class GAPolynomialUtils {
 	}
 
 	public static enum PolyMutationType {
-		A // TODO
+		POINT_MUTATION
 	}
 
 	public static enum PolyCrossoverType {
-		A // TODO
+		SIMPLE_CROSSOVER, ARITHMETICAL_CROSSOVER
 	}
 
 }
