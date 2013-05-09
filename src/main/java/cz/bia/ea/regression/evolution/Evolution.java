@@ -16,7 +16,7 @@ import static com.google.common.base.Preconditions.*;
 
 public class Evolution {
 
-	private final static boolean VERBOSE = true;
+	private final static boolean VERBOSE = false;
 
 	private final RandomNumbers randomNumbers;
 
@@ -55,6 +55,8 @@ public class Evolution {
 	}
 
 	private Result evolve(EvolutionType type) {
+		final long start = System.currentTimeMillis();
+
 		// Genetic Algorithm and Genetic Programming
 		GAPolynomial.setObjective(config.objective.objective);
 		GPTree.setObjective(config.objective.objective);
@@ -62,6 +64,7 @@ public class Evolution {
 		// generate initial population
 		population = new ArrayList<Individual>(config.populationSize);
 		initPopulation(type, config.populationSize);
+		evaluatePopulation();
 
 		final double max = config.maxEpochs;
 		final double threshold = config.fitnessThreshold;
@@ -70,29 +73,28 @@ public class Evolution {
 		final List<Long> timeProgress = new LinkedList<Long>();
 
 		// main evolution loop
-		Individual best;
+		Individual best = population.get(0);
 		int epoch;
-		for (epoch = 0; true; epoch++) {
+		for (epoch = 0; epoch < max && best.getFitness() > threshold; epoch++) {
 			long t = System.currentTimeMillis();
 
+			breadNewPopulation(type);
 			evaluatePopulation();
 			best = population.get(0);
-			double bestFit = best.getFitness();
-			if (bestFit < threshold || epoch > max) {
-				break;
-			}
-			breadNewPopulation(type);
 
-			fitnessProgress.add(bestFit);
+			fitnessProgress.add(best.getFitness());
 			timeProgress.add(System.currentTimeMillis() - t);
 
 			if (VERBOSE) {
-				System.out.printf("epoch=%d t=%d best=%g\n", epoch, System.currentTimeMillis() - t, bestFit);
+				System.out.printf("epoch=%d t=%d best=%g\n", epoch, System.currentTimeMillis() - t, best.getFitness());
 			}
 		}
 
+		// clean-up
+		population.clear();
+
 		// return the best found expression
-		return new Result(best.getExpression(), best.getFitness(), epoch, fitnessProgress, timeProgress);
+		return new Result(best.getExpression(), best.getFitness(), System.currentTimeMillis() - start, epoch, fitnessProgress, timeProgress);
 	}
 
 	private void initPopulation(EvolutionType type, int size) {
@@ -232,13 +234,15 @@ public class Evolution {
 	public static class Result {
 		public final Expression result;
 		public final double fitness;
+		public final long time;
 		public final int epochs;
 		public final List<Double> fitnessProgress;
 		public final List<Long> timeProgress;
 
-		public Result(Expression result, double fitness, int epochs, List<Double> fitnessProgress, List<Long> timeProgress) {
+		public Result(Expression result, double fitness, long time, int epochs, List<Double> fitnessProgress, List<Long> timeProgress) {
 			this.result = result;
 			this.fitness = fitness;
+			this.time = time;
 			this.epochs = epochs;
 			this.fitnessProgress = fitnessProgress;
 			this.timeProgress = timeProgress;
