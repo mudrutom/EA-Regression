@@ -45,8 +45,8 @@ public class GAConfiguration extends Configuration {
 		config.selectionSize = 200;
 		config.tournamentSize = 5;
 
-		config.crossoverType = GAPolynomialUtils.PolyCrossoverType.ARITHMETICAL_CROSSOVER;
-		config.mutationType = GAPolynomialUtils.PolyMutationType.POINT_MUTATION;
+		config.crossoverType = GAPolynomialUtils.PolyCrossoverType.SIMULATED_BINARY_CROSSOVER;
+		config.mutationType = GAPolynomialUtils.PolyMutationType.GAUSSIAN_POINT_MUTATION;
 		config.mutationProbability = 0.2;
 
 		config.maxEpochs = 100;

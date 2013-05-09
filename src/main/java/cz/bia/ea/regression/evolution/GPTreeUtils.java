@@ -36,8 +36,6 @@ public class GPTreeUtils {
 		// select random element
 		final ExpressionWrapper node = rnd.nextElement(set);
 		if (node.equals(tree.getRoot())) {
-			// TODO try something else
-			pointMutation(tree, factory, rnd);
 			return;
 		}
 
@@ -68,8 +66,6 @@ public class GPTreeUtils {
 		// select random element
 		final ExpressionWrapper node = rnd.nextElement(set);
 		if (node.equals(tree.getRoot())) {
-			// TODO try something else
-			subtreeMutation(tree, factory, rnd);
 			return;
 		}
 
@@ -115,8 +111,6 @@ public class GPTreeUtils {
 		final ExpressionWrapper one = rnd.nextElement(oneSet);
 		final ExpressionWrapper two = rnd.nextElement(twoSet);
 		if (one.equals(treeOne.getRoot()) || two.equals(treeTwo.getRoot())) {
-			// TODO try something else
-			subtreeCrossover(treeOne, treeTwo, rnd);
 			return;
 		}
 

@@ -9,11 +9,14 @@ import cz.bia.ea.regression.util.RandomNumbers;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.*;
 
 public class Evolution {
+
+	private final static boolean VERBOSE = true;
 
 	private final RandomNumbers randomNumbers;
 
@@ -33,7 +36,7 @@ public class Evolution {
 		this.factory = checkNotNull(factory);
 	}
 
-	public synchronized Expression evolvePolyFor(@NotNull List<Tuple> dataTuples, @NotNull GAConfiguration configuration) {
+	public synchronized Result evolvePolyFor(@NotNull List<Tuple> dataTuples, @NotNull GAConfiguration configuration) {
 		this.dataTuples = checkNotNull(dataTuples);
 		this.config = checkNotNull(configuration);
 		checkArgument(config.validate(), "GA configuration is not valid");
@@ -42,7 +45,7 @@ public class Evolution {
 		return evolve(EvolutionType.GA);
 	}
 
-	public synchronized Expression evolveTreeFor(@NotNull List<Tuple> dataTuples, @NotNull GPConfiguration configuration) {
+	public synchronized Result evolveTreeFor(@NotNull List<Tuple> dataTuples, @NotNull GPConfiguration configuration) {
 		this.dataTuples = checkNotNull(dataTuples);
 		this.config = checkNotNull(configuration);
 		checkArgument(config.validate(), "GP configuration is not valid");
@@ -51,18 +54,10 @@ public class Evolution {
 		return evolve(EvolutionType.GP);
 	}
 
-	private Expression evolve(EvolutionType type) {
-		// Genetic Algorithm or Genetic Programming
-		switch (type) {
-			case GA:
-				GAPolynomial.setObjective(config.objective.objective);
-				break;
-			case GP:
-				GPTree.setObjective(config.objective.objective);
-				break;
-			default:
-				throw new RuntimeException("unsupported EvolutionType");
-		}
+	private Result evolve(EvolutionType type) {
+		// Genetic Algorithm and Genetic Programming
+		GAPolynomial.setObjective(config.objective.objective);
+		GPTree.setObjective(config.objective.objective);
 
 		// generate initial population
 		population = new ArrayList<Individual>(config.populationSize);
@@ -71,10 +66,15 @@ public class Evolution {
 		final double max = config.maxEpochs;
 		final double threshold = config.fitnessThreshold;
 
+		final List<Double> fitnessProgress = new LinkedList<Double>();
+		final List<Long> timeProgress = new LinkedList<Long>();
+
 		// main evolution loop
 		Individual best;
-		for (int epoch = 0; true; epoch++) {
+		int epoch;
+		for (epoch = 0; true; epoch++) {
 			long t = System.currentTimeMillis();
+
 			evaluatePopulation();
 			best = population.get(0);
 			double bestFit = best.getFitness();
@@ -82,11 +82,17 @@ public class Evolution {
 				break;
 			}
 			breadNewPopulation(type);
-			System.out.printf("epoch=%d t=%d best=%g\n", epoch, System.currentTimeMillis() - t, bestFit);
+
+			fitnessProgress.add(bestFit);
+			timeProgress.add(System.currentTimeMillis() - t);
+
+			if (VERBOSE) {
+				System.out.printf("epoch=%d t=%d best=%g\n", epoch, System.currentTimeMillis() - t, bestFit);
+			}
 		}
 
 		// return the best found expression
-		return best.getExpression();
+		return new Result(best.getExpression(), best.getFitness(), epoch, fitnessProgress, timeProgress);
 	}
 
 	private void initPopulation(EvolutionType type, int size) {
@@ -125,8 +131,8 @@ public class Evolution {
 		population.clear();
 		population.addAll(parents);
 		population.addAll(children);
-		// apply mutation on new population
-		mutate(type, population);
+		// apply mutation on new population (excluding the best individual)
+		mutate(type, population.subList(1, population.size()));
 
 		// fill the rest of the population
 		final int rest = config.populationSize - population.size();
@@ -151,6 +157,7 @@ public class Evolution {
 				}
 			}
 			selection.add(winner);
+			winner = null;
 		}
 
 		return selection;
@@ -220,6 +227,22 @@ public class Evolution {
 
 	private static enum EvolutionType {
 		GA, GP
+	}
+
+	public static class Result {
+		public final Expression result;
+		public final double fitness;
+		public final int epochs;
+		public final List<Double> fitnessProgress;
+		public final List<Long> timeProgress;
+
+		public Result(Expression result, double fitness, int epochs, List<Double> fitnessProgress, List<Long> timeProgress) {
+			this.result = result;
+			this.fitness = fitness;
+			this.epochs = epochs;
+			this.fitnessProgress = fitnessProgress;
+			this.timeProgress = timeProgress;
+		}
 	}
 
 }

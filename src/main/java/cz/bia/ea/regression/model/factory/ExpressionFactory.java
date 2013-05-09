@@ -94,15 +94,18 @@ public class ExpressionFactory {
 	public ExpressionWrapper generateExpression(int depth) {
 		if (depth < 1) {
 			return createTerminalExpression();
-		} else if (binaryExpressions.length > 0 && randomNumbers.nextBoolean()) {
-			final ExpressionWrapper binary = createBinaryExpression();
-			binary.setLeftChild(generateExpression(depth - 1));
-			binary.setRightChild(generateExpression(depth - 1));
-			return binary;
-		} else if (unaryExpressions.length > 0 && randomNumbers.nextBoolean()) {
-			final ExpressionWrapper unary = createUnaryExpression();
-			unary.setChild(generateExpression(depth - 1));
-			return unary;
+		} else if (randomNumbers.nextDouble() < 0.75) {
+			// 75% chance for non-terminal, then 50% chance for binary/unary
+			if (binaryExpressions.length > 0 && randomNumbers.nextBoolean()) {
+				final ExpressionWrapper binary = createBinaryExpression();
+				binary.setLeftChild(generateExpression(depth - 1));
+				binary.setRightChild(generateExpression(depth - 1));
+				return binary;
+			} else if (unaryExpressions.length > 0) {
+				final ExpressionWrapper unary = createUnaryExpression();
+				unary.setChild(generateExpression(depth - 1));
+				return unary;
+			}
 		}
 
 		return generateExpression(depth - 1);

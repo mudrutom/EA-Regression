@@ -18,19 +18,32 @@ public class GAPolynomialUtils {
 
 	public static void mutation(@NotNull PolyMutationType type, GAPolynomial poly, double rangeForm, double rangeTo, RandomNumbers rnd) {
 		switch (checkNotNull(type)) {
-			case POINT_MUTATION:
-				pointMutation(poly, rangeForm, rangeTo, rnd);
+			case RANDOM_POINT_MUTATION:
+				randomPointMutation(poly, rangeForm, rangeTo, rnd);
+				break;
+			case GAUSSIAN_POINT_MUTATION:
+				gaussianPointMutation(poly, rangeForm, rangeTo, rnd);
 				break;
 		}
 	}
 
-	public static void pointMutation(@NotNull GAPolynomial poly, double rangeForm, double rangeTo, @NotNull RandomNumbers rnd) {
+	public static void randomPointMutation(@NotNull GAPolynomial poly, double rangeForm, double rangeTo, @NotNull RandomNumbers rnd) {
 		checkNotNull(poly); checkArgument(rangeForm < rangeTo); checkNotNull(rnd);
 
 		// select one parameter to change
 		final Number toChange = rnd.nextElement(poly.getParameters());
 		// assign a random number
 		toChange.setNumber(rnd.nextDouble(rangeForm, rangeTo));
+	}
+
+	public static void gaussianPointMutation(@NotNull GAPolynomial poly, double rangeForm, double rangeTo, @NotNull RandomNumbers rnd) {
+		checkNotNull(poly); checkArgument(rangeForm < rangeTo); checkNotNull(rnd);
+
+		// select one parameter to change
+		final Number toChange = rnd.nextElement(poly.getParameters());
+		final double delta = 0.1 * (rangeTo - rangeForm);
+		// change number by 'normal' increment
+		toChange.setNumber(toChange.getNumber() + rnd.nextGaussian() * delta);
 	}
 
 	public static void crossover(@NotNull PolyCrossoverType type, GAPolynomial polyOne, GAPolynomial polyTwo, RandomNumbers rnd) {
@@ -40,6 +53,9 @@ public class GAPolynomialUtils {
 				break;
 			case ARITHMETICAL_CROSSOVER:
 				arithmeticalCrossover(polyOne, polyTwo, rnd);
+				break;
+			case SIMULATED_BINARY_CROSSOVER:
+				simulatedBinaryCrossover(polyOne, polyTwo, rnd);
 				break;
 		}
 	}
@@ -74,11 +90,6 @@ public class GAPolynomialUtils {
 
 		final Iterator<Number> paramOne = polyOne.getParameters().iterator();
 		final Iterator<Number> paramTwo = polyTwo.getParameters().iterator();
-		final int n = polyOne.getParameters().size();
-		if (n < 2) {
-			// order 0 is not supported
-			return;
-		}
 
 		// arithmetic recombination (affine combination)
 		final double lambda = rnd.nextDouble();
@@ -89,6 +100,25 @@ public class GAPolynomialUtils {
 			double n2 = two.getNumber();
 			one.setNumber(lambda * n1 + (1 - lambda) * n2);
 			two.setNumber((1 - lambda) * n1 + lambda * n2);
+		}
+	}
+
+	public static void simulatedBinaryCrossover(@NotNull GAPolynomial polyOne, @NotNull GAPolynomial polyTwo, @NotNull RandomNumbers rnd) {
+		checkNotNull(polyOne); checkNotNull(polyTwo); checkNotNull(rnd);
+		checkArgument(polyOne.getOrder() == polyTwo.getOrder());
+
+		final Iterator<Number> paramOne = polyOne.getParameters().iterator();
+		final Iterator<Number> paramTwo = polyTwo.getParameters().iterator();
+
+		// simulated binary crossover
+		final double beta = 1.0 + rnd.nextGaussian();
+		while (paramOne.hasNext()) {
+			Number one = paramOne.next();
+			Number two = paramTwo.next();
+			double n1 = one.getNumber();
+			double n2 = two.getNumber();
+			one.setNumber(0.5 * (n1 + n2 + beta * Math.abs(n2 - n1)));
+			two.setNumber(0.5 * (n1 + n2 - beta * Math.abs(n2 - n1)));
 		}
 	}
 
@@ -113,11 +143,11 @@ public class GAPolynomialUtils {
 	}
 
 	public static enum PolyMutationType {
-		POINT_MUTATION
+		RANDOM_POINT_MUTATION, GAUSSIAN_POINT_MUTATION,
 	}
 
 	public static enum PolyCrossoverType {
-		SIMPLE_CROSSOVER, ARITHMETICAL_CROSSOVER
+		SIMPLE_CROSSOVER, ARITHMETICAL_CROSSOVER, SIMULATED_BINARY_CROSSOVER
 	}
 
 }

@@ -86,7 +86,7 @@ public class GPTree implements Individual {
 
 	@Override
 	public int compareTo(Individual other) {
-		if (getFitness() < other.getFitness()) {
+		if (other == null || getFitness() < other.getFitness()) {
 			return -1;
 		} else if (getFitness() > other.getFitness()) {
 			return +1;
